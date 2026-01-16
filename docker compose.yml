@@ -1,0 +1,38 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: onboarding
+      POSTGRES_USER: flowable
+      POSTGRES_PASSWORD: '13579'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  flowable:
+    image: flowable/all-in-one:3.17.0  # Latest Flowable [web:56]
+    environment:
+      FLOWABLE_DB_PASSWORD: flowable
+      FLOWABLE_APP_PASSWORD: test
+    ports:
+      - "8080:8080"  # Flowable UI/Modeler
+    depends_on:
+      - postgres
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+volumes:
+  postgres_data:

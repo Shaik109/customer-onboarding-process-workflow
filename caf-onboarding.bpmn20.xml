@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" 
+  xmlns:flowable="http://flowable.org/bpmn" id="definitions" targetNamespace="http://bpmn20.org/schema/bpmn">
+
+  <bpmn:process id="cafOnboarding" name="Customer Onboarding" isExecutable="true">
+    
+    <!-- Step 1: Start from Kafka CAF -->
+    <bpmn:startEvent id="start" />
+    
+    <!-- Service Task: Validate USIM / Insert CAF -->
+    <bpmn:serviceTask id="validateCaf" name="Validate CAF &amp; USIM" 
+      flowable:delegateExpression="${cafService.validateAndInsertCaf}" />
+    
+    <!-- Human Task: CSC Approval -->
+    <bpmn:userTask id="cscApproval" name="CSC Approval" 
+      flowable:assignee="csc-group" flowable:formKey="caf-approval-form" />
+    
+    <!-- Step 3: Pre-activation -->
+    <bpmn:serviceTask id="preActivation" name="Pre-activation Outward" 
+      flowable:delegateExpression="${integrationService.sendPreActivation}" />
+    
+    <!-- Async Wait for ACK -->
+    <bpmn:intermediateCatchEvent id="preAck" name="Wait Pre-ACK">
+      <bpmn:signalEventDefinition signalRef="preActivationAck" />
+    </bpmn:intermediateCatchEvent>
+    
+    <!-- Televerification -->
+    <bpmn:userTask id="teleVerification" name="Tele-verification" 
+      flowable:assignee="customer-care-group" />
+    
+    <!-- More steps... Final Activation, Sancharsoft -->
+    <bpmn:exclusiveGateway id="isAgent" />
+    <bpmn:serviceTask id="sancharsoft" name="Sancharsoft Commission" />
+    
+    <bpmn:endEvent id="end" />
+    
+    <!-- Sequence flows -->
+    <bpmn:sequenceFlow id="flow1" sourceRef="start" targetRef="validateCaf" />
+    <bpmn:sequenceFlow id="flow2" sourceRef="validateCaf" targetRef="cscApproval" />
+    <!-- ... complete flows -->
+    
+  </bpmn:process>
+
+  <!-- Signals for async callbacks -->
+  <bpmn:signal id="preActivationAck" name="Pre-activation ACK" />
+  
+</bpmn:definitions>
