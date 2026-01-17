@@ -37,26 +37,11 @@
     <!-- Sequence flows -->
     <bpmn:sequenceFlow id="flow1" sourceRef="start" targetRef="validateCaf" />
     <bpmn:sequenceFlow id="flow2" sourceRef="validateCaf" targetRef="cscApproval" />
-    <sequenceFlow id="flow4" sourceRef="preActivation" targetRef="waitPreActAck"/>
-    <sequenceFlow id="flow5" sourceRef="waitPreActAck" targetRef="teleVerification"/>
-    <sequenceFlow id="flow6" sourceRef="teleVerification" targetRef="waitTVAck"/>
-    <sequenceFlow id="flow7" sourceRef="waitTVAck" targetRef="tvDecision"/>
-    <sequenceFlow id="flowTVSuccess" sourceRef="tvDecision" targetRef="finalActivation"/>
-    <sequenceFlow id="flow8" sourceRef="finalActivation" targetRef="waitFinalAck"/>
-    <sequenceFlow id="flow9" sourceRef="waitFinalAck" targetRef="agentDecision"/>
-    <sequenceFlow id="flow10" sourceRef="commissionTask" targetRef="successEnd"/>
-
     <!-- ... complete flows -->
     
   </bpmn:process>
 
   <!-- Signals for async callbacks -->
   <bpmn:signal id="preActivationAck" name="Pre-activation ACK" />
-  <!-- ================= MESSAGES ================= -->
-
-  <message id="preactAckMessage" name="PreActivationACK"/>
-  <message id="tvAckMessage" name="TeleVerificationACK"/>
-  <message id="finalAckMessage" name="FinalActivationACK"/>
-
   
 </bpmn:definitions>
